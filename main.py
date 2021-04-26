@@ -4,9 +4,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+import time
 
-PROMISED_DOWN = 20
-PROMISED_UP = 60
+PROMISED_DOWN = 100
+PROMISED_UP = 30
 CHROME_DRIVER_PATH = os.environ.get("CHROME_DRIVER_PATH")
 TWITTER_EMAIL = os.environ.get("TWITTER_EMAIL")
 TWITTER_PASSWORD = os.environ.get("TWITTER_PASSWORD")
@@ -41,7 +42,17 @@ class InternetSpeedTwitterBot:
         password_input.send_keys(TWITTER_PASSWORD)
         password_input.send_keys(Keys.ENTER)
 
+        tweet_compose = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.public-DraftStyleDefault-block")))
+        message = f"Hey Internet Provider, why is my internet speed {self.download}down/{self.upload}up when I pay for {PROMISED_DOWN}down/{PROMISED_UP}up?"
+
+        tweet_compose.send_keys(message)
+        tweet_button = self.driver.find_element_by_xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div[2]/div[1]/div/div/div/div[2]/div[4]/div/div/div[2]/div[3]/div/span/span')
+        tweet_button.click()
+
+        time.sleep(2)
+        self.driver.quit()
+
 
 bot = InternetSpeedTwitterBot(CHROME_DRIVER_PATH)
-# bot.get_internet_speed()
+bot.get_internet_speed()
 bot.tweet_at_provider()
